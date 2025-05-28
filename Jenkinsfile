@@ -32,7 +32,7 @@
                 withCredentials([
                     [
                         $class: 'AmazonWebServicesCredentialsBinding',
-                        credentialsId: 'AWS S3 Credentials'
+                        credentialsId: 'aws-credentials'
                     ]
                 ]) {
                     bat '''
