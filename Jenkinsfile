@@ -1,4 +1,4 @@
-  pipeline {
+ pipeline {
     agent any
 
     environment {
@@ -9,7 +9,7 @@
     stages {
         stage('Checkout Source Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/Ritesh1914/static-website-hosting-jenkins'
+                git 'https://github.com/Ritesh1914/static-website-hosting-jenkins'
             }
         }
 
@@ -29,15 +29,11 @@
 
         stage('Deploy to S3') {
             steps {
-                withCredentials([
-                    [
-                        $class: 'AmazonWebServicesCredentialsBinding',
-                        credentialsId: 'aws-credentials'
-                    ]
-                ]) {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',
+                                  credentialsId: 'aws-credentials']]) {
                     bat '''
                     echo Deploying to S3 bucket: %S3_BUCKET% in region %AWS_REGION%
-                    aws s3 sync . s3://%S3_BUCKET% --delete --acl public-read --exclude ".git/*" --region %AWS_REGION%
+                    aws s3 sync . s3://%S3_BUCKET% --delete --exclude ".git/*" --region %AWS_REGION%
                     '''
                 }
             }
@@ -45,11 +41,11 @@
     }
 
     post {
-        success {
-            echo '✅ Deployment to S3 succeeded.'
-        }
         failure {
             echo '❌ Deployment failed.'
+        }
+        success {
+            echo '✅ Deployment successful!'
         }
     }
 }
